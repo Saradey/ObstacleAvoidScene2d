@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors
 import com.goncharov.evgeny.obstacle.avoid.navigation.KeyNavigation
 import com.goncharov.evgeny.obstacle.avoid.navigation.Navigation
+import com.goncharov.evgeny.obstacle.avoid.screens.LoadingScreen
 import com.goncharov.evgeny.obstacle.avoid.utils.FormatUtils
 import com.goncharov.evgeny.obstacle.avoid.utils.FpsMonitorManager
 import com.goncharov.evgeny.obstacle.avoid.utils.debug.DebugDrawingFps
@@ -64,9 +65,9 @@ class App : Game(), Navigation, FpsMonitorManager {
 
     override fun navigate(key: KeyNavigation) {
         when (key) {
-//            KeyNavigation.LoadingKey -> setScreen(
-//                LoadingScreen(assetManager, debugRender, this)
-//            )
+            KeyNavigation.LoadingKey -> setScreen(
+                LoadingScreen(assetManager, debugRender, this)
+            )
 //            KeyNavigation.MenuKey -> setScreen(
 //                MenuScreen(this, assetManager, batch, this)
 //            )
