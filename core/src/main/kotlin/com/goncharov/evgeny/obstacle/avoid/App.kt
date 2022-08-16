@@ -9,7 +9,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors
 import com.goncharov.evgeny.obstacle.avoid.navigation.KeyNavigation
 import com.goncharov.evgeny.obstacle.avoid.navigation.Navigation
+import com.goncharov.evgeny.obstacle.avoid.screens.HighScoreScreen
 import com.goncharov.evgeny.obstacle.avoid.screens.LoadingScreen
+import com.goncharov.evgeny.obstacle.avoid.screens.MenuScreen
+import com.goncharov.evgeny.obstacle.avoid.screens.OptionsScreen
 import com.goncharov.evgeny.obstacle.avoid.utils.FormatUtils
 import com.goncharov.evgeny.obstacle.avoid.utils.FpsMonitorManager
 import com.goncharov.evgeny.obstacle.avoid.utils.debug.DebugDrawingFps
@@ -68,18 +71,18 @@ class App : Game(), Navigation, FpsMonitorManager {
             KeyNavigation.LoadingKey -> setScreen(
                 LoadingScreen(assetManager, debugRender, this)
             )
-//            KeyNavigation.MenuKey -> setScreen(
-//                MenuScreen(this, assetManager, batch, this)
-//            )
+            KeyNavigation.MenuKey -> setScreen(
+                MenuScreen(this, assetManager, batch, this)
+            )
 //            KeyNavigation.GameKey -> setScreen(
 //                GameScreen(assetManager, debugRender, batch, this, this)
 //            )
-//            KeyNavigation.HighScoreKey -> setScreen(
-//                HighScoreScreen(this, assetManager, batch, this)
-//            )
-//            KeyNavigation.OptionsKey -> setScreen(
-//                OptionsScreen(this, assetManager, batch, this)
-//            )
+            KeyNavigation.HighScoreKey -> setScreen(
+                HighScoreScreen(this, assetManager, batch, this)
+            )
+            KeyNavigation.OptionsKey -> setScreen(
+                OptionsScreen(this, assetManager, batch, this)
+            )
         }
     }
 
