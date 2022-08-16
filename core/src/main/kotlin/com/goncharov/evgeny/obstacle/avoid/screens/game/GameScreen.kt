@@ -1,11 +1,13 @@
 package com.goncharov.evgeny.obstacle.avoid.screens.game
 
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.viewport.FitViewport
@@ -17,11 +19,12 @@ import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors.FONT_DESCRIPT
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors.GAME_PLAY_DESCRIPTOR
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors.HIT_SOUND_DESCRIPTOR
 import com.goncharov.evgeny.obstacle.avoid.navigation.Navigation
+import com.goncharov.evgeny.obstacle.avoid.utils.GdxUtils
 
 class GameScreen(
     private val navigator: Navigation,
     assetManager: AssetManager,
-    batch: SpriteBatch
+    private val batch: SpriteBatch
 ) : BaseScreen() {
 
     private val layout = GlyphLayout()
@@ -48,15 +51,32 @@ class GameScreen(
     private val obstaclePool = Pools.get(ObstacleActor::class.java)
 
     override fun show() {
-
+        stage.isDebugAll = true
+        renderer.color = Color.RED
+        val background = Image(backgroundRegion)
+        background.setSize(WORLD_WIDTH, WORLD_HEIGHT)
+        stage.addActor(background)
+        playerActor.setPosition(startPlayerX, startPlayerY)
+        playerActor.setRegion(gameAtlas.findRegion(PLAYER))
+        stage.addActor(playerActor)
     }
 
     override fun render(delta: Float) {
-
+        update(delta)
+        GdxUtils.clearScreen()
+        viewport.apply()
+        renderGamePlay()
+        uiViewport.apply()
+        renderUi()
+        viewport.apply()
+//        if (isGameOver()) {
+//            navigator.navigate(KeyNavigation.MenuKey)
+//        }
     }
 
     override fun resize(width: Int, height: Int) {
-
+        viewport.update(width, height, true)
+        uiViewport.update(width, height, true)
     }
 
     override fun hide() {
@@ -64,10 +84,52 @@ class GameScreen(
     }
 
     override fun dispose() {
+        renderer.dispose()
+    }
 
+    private fun update(delta: Float) {
+        if (isGameOver()) return
+
+    }
+
+    private fun renderGamePlay() {
+        batch.projectionMatrix = camera.combined
+        stage.act()
+        stage.draw()
+    }
+
+    private fun renderUi() {
+        uiViewport.apply()
+        batch.projectionMatrix = uiCamera.combined
+        batch.begin()
+        val liveText = LIVE_TEXT.format(lives)
+        layout.setText(font, liveText)
+        font.color = Color.WHITE
+        font.draw(batch, liveText, 20f, UI_HEIGHT - layout.height)
+        val scoreText = SCORE_TEXT.format(displayScore)
+        layout.setText(font, scoreText)
+        font.draw(batch, scoreText, UI_WIDTH - layout.width - 20f, UI_HEIGHT - layout.height)
+        if (isGameOver()) {
+            layout.setText(font, OVER_GAME_TEXT)
+            font.color = Color.RED
+            font.draw(
+                batch,
+                OVER_GAME_TEXT,
+                (UI_WIDTH - layout.width) / 2f,
+                (UI_HEIGHT - layout.height) / 2f
+            )
+        }
+        batch.end()
+    }
+
+    private fun isGameOver(): Boolean {
+        return lives <= 0
     }
 
     companion object {
         private const val PADDING = 20f
+        private const val LIVE_TEXT = "LIVES: %d"
+        private const val SCORE_TEXT = "SCORE: %d"
+        private const val OVER_GAME_TEXT = "GAME OVER"
     }
 }
