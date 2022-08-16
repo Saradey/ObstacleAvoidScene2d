@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors
+import com.goncharov.evgeny.obstacle.avoid.managers.GameManager
 import com.goncharov.evgeny.obstacle.avoid.navigation.KeyNavigation
 import com.goncharov.evgeny.obstacle.avoid.navigation.Navigation
 import com.goncharov.evgeny.obstacle.avoid.screens.HighScoreScreen
@@ -76,7 +77,7 @@ class App : Game(), Navigation, FpsMonitorManager {
                 MenuScreen(this, assetManager, batch, this)
             )
             KeyNavigation.GameKey -> setScreen(
-                GameScreen(this, assetManager, batch)
+                GameScreen(this, assetManager, batch, GameManager)
             )
             KeyNavigation.HighScoreKey -> setScreen(
                 HighScoreScreen(this, assetManager, batch, this)

@@ -42,5 +42,6 @@ class ObstacleActor : ActorBase(), Pool.Poolable {
 
     override fun reset() {
         hit = false
+        setRegion(null)
     }
 }

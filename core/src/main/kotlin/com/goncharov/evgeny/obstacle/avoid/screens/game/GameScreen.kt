@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Array
@@ -18,20 +18,23 @@ import com.goncharov.evgeny.obstacle.avoid.consts.*
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors.FONT_DESCRIPTOR
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors.GAME_PLAY_DESCRIPTOR
 import com.goncharov.evgeny.obstacle.avoid.consts.AssetDescriptors.HIT_SOUND_DESCRIPTOR
+import com.goncharov.evgeny.obstacle.avoid.managers.GameManager
+import com.goncharov.evgeny.obstacle.avoid.navigation.KeyNavigation
 import com.goncharov.evgeny.obstacle.avoid.navigation.Navigation
 import com.goncharov.evgeny.obstacle.avoid.utils.GdxUtils
+import kotlin.math.min
 
 class GameScreen(
     private val navigator: Navigation,
     assetManager: AssetManager,
-    private val batch: SpriteBatch
+    private val batch: SpriteBatch,
+    private val gameManager: GameManager
 ) : BaseScreen() {
 
     private val layout = GlyphLayout()
     private val camera = OrthographicCamera()
     private val viewport = FitViewport(WORLD_WIDTH, WORLD_HEIGHT)
     private val stage = Stage(viewport, batch)
-    private val renderer = ShapeRenderer()
     private val uiCamera = OrthographicCamera()
     private val uiViewport = FitViewport(UI_WIDTH, UI_HEIGHT)
     private val font = assetManager[FONT_DESCRIPTOR]
@@ -52,7 +55,6 @@ class GameScreen(
 
     override fun show() {
         stage.isDebugAll = true
-        renderer.color = Color.RED
         val background = Image(backgroundRegion)
         background.setSize(WORLD_WIDTH, WORLD_HEIGHT)
         stage.addActor(background)
@@ -69,9 +71,9 @@ class GameScreen(
         uiViewport.apply()
         renderUi()
         viewport.apply()
-//        if (isGameOver()) {
-//            navigator.navigate(KeyNavigation.MenuKey)
-//        }
+        if (isGameOver()) {
+            navigator.navigate(KeyNavigation.MenuKey)
+        }
     }
 
     override fun resize(width: Int, height: Int) {
@@ -84,12 +86,16 @@ class GameScreen(
     }
 
     override fun dispose() {
-        renderer.dispose()
+        stage.dispose()
     }
 
     private fun update(delta: Float) {
         if (isGameOver()) return
-
+        createNewObstacle(delta)
+        removePassedObstacles()
+        updateScore(delta)
+        updateDisplayScore(delta)
+        checkedCollision()
     }
 
     private fun renderGamePlay() {
@@ -124,6 +130,82 @@ class GameScreen(
 
     private fun isGameOver(): Boolean {
         return lives <= 0
+    }
+
+    private fun createNewObstacle(delta: Float) {
+        obstacleTimer += delta
+        if (obstacleTimer >= OBSTACLE_SPAWN_TIME) {
+//            val min = 0f
+//            val max = WORLD_WIDTH - OBSTACLE_SIZE
+//            val obstacleX = MathUtils.random(min, max)
+//            val obstacleY = WORLD_HEIGHT
+//            val obstacle = obstaclePool.obtain()
+//            obstacle.setYSpeed(gameManager.getDifficultyLevel().obstacleSpeed)
+//            obstacle.setPosition(obstacleX, obstacleY)
+//            obstacle.setRegion(obstacleRegion)
+//            obstacles.add(obstacle)
+//            stage.addActor(obstacle)
+//            obstacleTimer = 0f
+        }
+    }
+
+    private fun removePassedObstacles() {
+        if (obstacles.size > 0) {
+            val first = obstacles.first()
+            val minObstacleY = -OBSTACLE_SIZE
+            if (first.y < minObstacleY) {
+                obstacles.removeValue(first, true)
+                // removes actor from parent / stage
+                first.remove()
+                // returning to pool
+                obstaclePool.free(first)
+            }
+        }
+    }
+
+    private fun updateScore(delta: Float) {
+        scoreTimer += delta
+        if (scoreTimer >= SCORE_MAX_TIME) {
+            score += MathUtils.random(0, 5)
+            scoreTimer = 0f
+        }
+    }
+
+    private fun updateDisplayScore(delta: Float) {
+        if (displayScore < score) {
+            displayScore = min(score, displayScore + (60 * delta).toInt())
+        }
+    }
+
+    private fun checkedCollision() {
+        if (!isGameOver() && isPlayerCollidingWithObstacle()) {
+            lives--
+            if (isGameOver()) {
+                gameManager.updateHighScore(score)
+            } else {
+                restart()
+            }
+        }
+    }
+
+    private fun isPlayerCollidingWithObstacle(): Boolean {
+        obstacles.forEach { obstacle ->
+            if (obstacle.isNotHit() && obstacle.isPlayerColliding(playerActor)) {
+                hitSound.play()
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun restart() {
+        obstacles.forEach { obstacle ->
+            // remove obstacle from stage (parent)
+            obstacle.remove()
+            obstaclePool.free(obstacle)
+        }
+        obstacles.clear()
+        playerActor.setPosition(startPlayerX, startPlayerY)
     }
 
     companion object {
