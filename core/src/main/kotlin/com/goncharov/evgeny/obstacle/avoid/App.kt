@@ -13,6 +13,7 @@ import com.goncharov.evgeny.obstacle.avoid.screens.HighScoreScreen
 import com.goncharov.evgeny.obstacle.avoid.screens.LoadingScreen
 import com.goncharov.evgeny.obstacle.avoid.screens.MenuScreen
 import com.goncharov.evgeny.obstacle.avoid.screens.OptionsScreen
+import com.goncharov.evgeny.obstacle.avoid.screens.game.GameScreen
 import com.goncharov.evgeny.obstacle.avoid.utils.FormatUtils
 import com.goncharov.evgeny.obstacle.avoid.utils.FpsMonitorManager
 import com.goncharov.evgeny.obstacle.avoid.utils.debug.DebugDrawingFps
@@ -74,9 +75,9 @@ class App : Game(), Navigation, FpsMonitorManager {
             KeyNavigation.MenuKey -> setScreen(
                 MenuScreen(this, assetManager, batch, this)
             )
-//            KeyNavigation.GameKey -> setScreen(
-//                GameScreen(assetManager, debugRender, batch, this, this)
-//            )
+            KeyNavigation.GameKey -> setScreen(
+                GameScreen(this, assetManager, batch)
+            )
             KeyNavigation.HighScoreKey -> setScreen(
                 HighScoreScreen(this, assetManager, batch, this)
             )
