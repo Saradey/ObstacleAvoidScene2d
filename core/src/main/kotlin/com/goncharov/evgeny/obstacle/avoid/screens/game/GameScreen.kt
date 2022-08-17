@@ -2,7 +2,6 @@ package com.goncharov.evgeny.obstacle.avoid.screens.game
 
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -32,10 +31,8 @@ class GameScreen(
 ) : BaseScreen() {
 
     private val layout = GlyphLayout()
-    private val camera = OrthographicCamera()
     private val viewport = FitViewport(WORLD_WIDTH, WORLD_HEIGHT)
     private val stage = Stage(viewport, batch)
-    private val uiCamera = OrthographicCamera()
     private val uiViewport = FitViewport(UI_WIDTH, UI_HEIGHT)
     private val font = assetManager[FONT_DESCRIPTOR]
     private var obstacleTimer = 0f
@@ -70,7 +67,6 @@ class GameScreen(
         renderGamePlay()
         uiViewport.apply()
         renderUi()
-        viewport.apply()
         if (isGameOver()) {
             navigator.navigate(KeyNavigation.MenuKey)
         }
@@ -99,22 +95,20 @@ class GameScreen(
     }
 
     private fun renderGamePlay() {
-        batch.projectionMatrix = camera.combined
         stage.act()
         stage.draw()
     }
 
     private fun renderUi() {
         uiViewport.apply()
-        batch.projectionMatrix = uiCamera.combined
         batch.begin()
         val liveText = LIVE_TEXT.format(lives)
         layout.setText(font, liveText)
         font.color = Color.WHITE
-        font.draw(batch, liveText, 20f, UI_HEIGHT - layout.height)
+        font.draw(batch, liveText, PADDING, UI_HEIGHT - layout.height)
         val scoreText = SCORE_TEXT.format(displayScore)
         layout.setText(font, scoreText)
-        font.draw(batch, scoreText, UI_WIDTH - layout.width - 20f, UI_HEIGHT - layout.height)
+        font.draw(batch, scoreText, UI_WIDTH - layout.width - PADDING, UI_HEIGHT - layout.height)
         if (isGameOver()) {
             layout.setText(font, OVER_GAME_TEXT)
             font.color = Color.RED
