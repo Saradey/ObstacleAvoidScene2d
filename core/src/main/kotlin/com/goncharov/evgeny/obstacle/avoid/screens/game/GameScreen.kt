@@ -135,17 +135,17 @@ class GameScreen(
     private fun createNewObstacle(delta: Float) {
         obstacleTimer += delta
         if (obstacleTimer >= OBSTACLE_SPAWN_TIME) {
-//            val min = 0f
-//            val max = WORLD_WIDTH - OBSTACLE_SIZE
-//            val obstacleX = MathUtils.random(min, max)
-//            val obstacleY = WORLD_HEIGHT
-//            val obstacle = obstaclePool.obtain()
-//            obstacle.setYSpeed(gameManager.getDifficultyLevel().obstacleSpeed)
-//            obstacle.setPosition(obstacleX, obstacleY)
-//            obstacle.setRegion(obstacleRegion)
-//            obstacles.add(obstacle)
-//            stage.addActor(obstacle)
-//            obstacleTimer = 0f
+            val min = 0f
+            val max = WORLD_WIDTH - OBSTACLE_SIZE
+            val obstacleX = MathUtils.random(min, max)
+            val obstacleY = WORLD_HEIGHT
+            val obstacle = obstaclePool.obtain()
+            obstacle.setYSpeed(gameManager.getDifficultyLevel().obstacleSpeed)
+            obstacle.setPosition(obstacleX, obstacleY)
+            obstacle.setRegion(obstacleRegion)
+            obstacles.add(obstacle)
+            stage.addActor(obstacle)
+            obstacleTimer = 0f
         }
     }
 

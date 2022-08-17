@@ -22,7 +22,7 @@ class ObstacleActor : ActorBase(), Pool.Poolable {
     }
 
     private fun update() {
-        y -= y - ySpeed
+        y -= ySpeed
     }
 
     fun setYSpeed(ySpeed: Float) {
